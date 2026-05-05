@@ -1,6 +1,7 @@
 import os
 import time
 import cv2
+import asyncio
 
 from CameraManager import CameraManager
 from FaceDetector import FaceDetector
@@ -33,7 +34,7 @@ hud = HUDRenderer(frame_width=640, frame_height=480)
 
 
 prev_time = time.time()
-
+print("Starting main loop. Press 'q' to quit.")
 while True:
     now = time.time()
     dt = now - prev_time
@@ -44,9 +45,11 @@ while True:
     annotated = detector.draw_detections(frame, result)
 
     if controller.state == GameState.CAPTURE:
+        print(f"Capture phase: detected {result.face_count} faces, target was {controller.target_count}")
         controller.submit_face_count(result.face_count)
 
     controller.update(dt)
+
 
     hud_frame = hud.render(annotated, controller)
     display.display_frame(hud_frame)
@@ -69,7 +72,8 @@ while True:
         controller.toggle_pause()
     elif key == ord('r'):
         controller.reset()
-        controller.start_game()
+        controller.confirm_setup()
+    
 
 camera.release()
 display.stop()
