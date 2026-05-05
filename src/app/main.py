@@ -7,16 +7,25 @@ from FaceDetector import FaceDetector
 from GameController import GameController, GameState
 from HUDRenderer import HUDRenderer
 from LocalDisplayManager import LocalDisplayManager
+from ButtonManager import ButtonManager, LocalButtonManager
 
 os.environ["OPENCV_LOG_LEVEL"] = "SILENT"
 
 ENVIRONMENT = "local"  # "local" | "pynq"
 
+
+
 if ENVIRONMENT == "pynq":
+    from pynq.overlays.base import BaseOverlay
+    base = BaseOverlay("base.bit")
+    buttons = ButtonManager(base)
+
     from DisplayManager import DisplayManager
     display = DisplayManager(resolution=(640, 480))
 else:
     display = LocalDisplayManager(resolution=(640, 480))
+    
+    buttons = LocalButtonManager()
 
 camera = CameraManager(resolution=(640, 480))
 detector = FaceDetector(cascade_path=cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -44,6 +53,7 @@ while True:
     display.display_frame(hud_frame)
 
     key = cv2.waitKey(1) & 0xFF
+    buttons.update(key)
     if key == ord('q'):
         break
     elif key == ord('p'):
