@@ -24,7 +24,6 @@ if ENVIRONMENT == "pynq":
     display = DisplayManager(resolution=(640, 480))
 else:
     display = LocalDisplayManager(resolution=(640, 480))
-    
     buttons = LocalButtonManager()
 
 camera = CameraManager(resolution=(640, 480))
@@ -32,7 +31,7 @@ detector = FaceDetector(cascade_path=cv2.data.haarcascades + 'haarcascade_fronta
 controller = GameController(face_count_min=1, face_count_max=6, base_countdown=10.0)
 hud = HUDRenderer(frame_width=640, frame_height=480)
 
-controller.start_game()
+
 prev_time = time.time()
 
 while True:
@@ -54,8 +53,18 @@ while True:
 
     key = cv2.waitKey(1) & 0xFF
     buttons.update(key)
+    pressed = buttons.read_pressed()
+
     if key == ord('q'):
         break
+
+    if controller.state == GameState.SETUP:
+        if pressed['btn0']:
+            controller.dec_max_faces()
+        if pressed['btn1']:
+            controller.inc_max_faces()
+        if pressed['btn2'] or key in (13, 32):  # btn2, Enter, or Space
+            controller.confirm_setup()
     elif key == ord('p'):
         controller.toggle_pause()
     elif key == ord('r'):

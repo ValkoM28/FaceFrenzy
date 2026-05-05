@@ -25,10 +25,14 @@ class HUDRenderer:
             self._put_text(out, "STUB MODE — controller not implemented", (10, self.h // 2), WHITE)
             return out
 
+        from GameController import GameState
+        if state == GameState.SETUP:
+            self._render_setup(out, controller)
+            return out
+
         self._render_lives(out, controller.lives)
         self._render_score(out, controller.score)
 
-        from GameController import GameState
         if state == GameState.IDLE:
             self._render_idle(out)
         elif state == GameState.COUNTDOWN:
@@ -41,6 +45,11 @@ class HUDRenderer:
             self._put_centered(out, "PAUSED", WHITE)
 
         return out
+
+    def _render_setup(self, frame, controller):
+        self._put_centered(frame, "Select max faces", WHITE, y_offset=-50)
+        self._put_centered(frame, str(controller.face_count_max), YELLOW, scale=2.0)
+        self._put_centered(frame, "1: -   2: +   3: OK", WHITE, y_offset=60)
 
     def _render_idle(self, frame):
         self._put_centered(frame, "Press any key to start", WHITE)
