@@ -3,6 +3,7 @@ from enum import Enum, auto
 
 
 class GameState(Enum):
+    SETUP = auto()
     IDLE = auto()
     COUNTDOWN = auto()
     CAPTURE = auto()
@@ -21,7 +22,26 @@ class GameController:
         max_lives=3,
         countdown_formula=None,
     ):
-        pass
+        self._face_count_min = face_count_min
+        self._face_count_max = face_count_max
+        self._in_setup = True
+
+    # --- setup ---
+
+    @property
+    def face_count_max(self) -> int:
+        return self._face_count_max
+
+    def inc_max_faces(self):
+        self._face_count_max += 1
+
+    def dec_max_faces(self):
+        if self._face_count_max > 2:
+            self._face_count_max -= 1
+
+    def confirm_setup(self):
+        self._in_setup = False
+        self.start_game()
 
     # --- actions ---
 
@@ -44,7 +64,9 @@ class GameController:
 
     @property
     def state(self) -> GameState:
-        pass
+        if self._in_setup:
+            return GameState.SETUP
+        return None  # remaining states are stubs
 
     @property
     def lives(self) -> int:
