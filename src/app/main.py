@@ -19,7 +19,7 @@ else:
     display = LocalDisplayManager(resolution=(640, 480))
 
 camera = CameraManager(resolution=(640, 480))
-detector = FaceDetector(cascade_path='data/haarcascade_frontalface_default.xml')
+detector = FaceDetector(cascade_path=cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 controller = GameController(face_count_min=1, face_count_max=6, base_countdown=10.0)
 hud = HUDRenderer(frame_width=640, frame_height=480)
 
