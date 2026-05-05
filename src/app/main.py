@@ -3,15 +3,33 @@ import time
 import cv2
 
 from CameraManager import CameraManager
-from DisplayManager import DisplayManager
 from FaceDetector import FaceDetector
 from GameController import GameController, GameState
 from HUDRenderer import HUDRenderer
 
 os.environ["OPENCV_LOG_LEVEL"] = "SILENT"
 
+ENVIRONMENT = "local"  # "local" | "pynq"
+
+
+class LocalDisplay:
+    def __init__(self):
+        pass
+
+    def display_frame(self, frame):
+        cv2.imshow("FaceFrenzy", frame)
+
+    def stop(self):
+        cv2.destroyAllWindows()
+
+
+if ENVIRONMENT == "pynq":
+    from DisplayManager import DisplayManager
+    display = DisplayManager(resolution=(640, 480))
+else:
+    display = LocalDisplay()
+
 camera = CameraManager(resolution=(640, 480))
-display = DisplayManager(resolution=(640, 480))
 detector = FaceDetector(cascade_path='data/haarcascade_frontalface_default.xml')
 controller = GameController(face_count_min=1, face_count_max=6, base_countdown=10.0)
 hud = HUDRenderer(frame_width=640, frame_height=480)
